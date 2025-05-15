@@ -1,7 +1,9 @@
 import streamlit as st
 from datetime import date
 import pandas as pd
+from openai import OpenAI
 
+client = OpenAI(api_key=st.secrets["openai_api_key"])
 
 st.title("Search Campaign Deployer")
 st.write("Converts Google Search campaign data into a batch csv file for rapid campaign creation.")
@@ -110,7 +112,7 @@ with group3keywordcolumn:
 
 with group4keywordcolumn:
     group4keywords = st.text_area(
-        "Paste Adgroup3 keywords:",
+        "Paste Adgroup4 keywords:",
         height=200,
         key='col4'
     )
@@ -542,9 +544,25 @@ if st.button("Add Ad"):  # Adds or overwrites 3 rows for the Ad Group
 
     # Show updated DataFrame
     st.write(df)
-    st.write(ad1descriptionlist)
 
 
 
+#AI Module
+st.write('')
+st.write('')
+st.write('')
+st.write('')
+st.write('')
+st.write('')
 
-        
+userinput = st.text_area("Describe your search campaign")
+
+
+if st.button("Generate Ideas"):
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": userinput}],
+        temperature=0.7,
+    )
+    output = response.choices[0].message.content
+    st.text_area("Output", output, height=200)
